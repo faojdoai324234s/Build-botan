@@ -2,29 +2,35 @@ name: Windows Build
 
 on:
   push:
-    branches: main
+    branches:
+      - main
   pull_request:
-    branches: main
+    branches:
+      - main
+
+env:
+  library_name: botan
+  triplet: x64-windows-custom
   
 jobs:
   build:
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
-      - name: Install Visual Studio platform toolset
+      - name: Install ${{ env.library_name }}
         shell: cmd
         run: |
-          "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\setup.exe" modify --quiet --includeRecommended --includeOptional --downloadThenInstall ^
-          --installPath "%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise" ^
-          --productId Microsoft.VisualStudio.Product.Enterprise ^
-          --channelId VisualStudio.17.Release ^
-          --add Microsoft.VisualStudio.Component.VC.v141.x86.x64
+          git clone https://github.com/microsoft/vcpkg
+          cd vcpkg
+          git checkout 3dd12b903561148b931de27f10f7f603db8e0171 -- ports/${{ env.library_name }}
+          copy /y /v ${{github.workspace}}\${{ env.triplet }}.cmake triplets
+          vcpkg install ${{ env.library_name }} ${{ env.library_name }}:${{ env.triplet }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Windows-artifact
-          path: ${{github.workspace}}
+          name: ${{ env.library_name }}-windows
+          path: ${{github.workspace}}/vcpkg/installed/${{ env.triplet }}
           if-no-files-found: ignore
           include-hidden-files: true
           retention-days: 0
