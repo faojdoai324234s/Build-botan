@@ -2,6 +2,8 @@ vcpkg_minimum_required(VERSION 2022-10-12) # for ${VERSION}
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO faojdoai324234s/botan
+    REF 1265d9eaeab26a62f33f8c3d1e4a93a96efef321
+    SHA512 0f903a65ed3f914bc34d45cd0fbe07fc5efb916660dee6274d881ac2a8d266b53d1ebfc43977372094cfc77f9b72c7fa9093c3f2c8cf108c89337f6bd2ed9c81
     HEAD_REF release-2
     PATCHES
         fix-generate-build-path.patch
