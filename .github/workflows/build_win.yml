@@ -17,18 +17,17 @@ jobs:
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
-      - name: Install ${{ env.library_name }}
+      - name: Download ${{ env.library_name }}
+        shell: pwsh
+        run: |
+          $AllProtocols = [System.Net.SecurityProtocolType]'Tls,Tls11,Tls12'
+          [System.Net.ServicePointManager]::SecurityProtocol = $AllProtocols
+          
+          $ProgressPreference = 'SilentlyContinue'
+          $archive_file = "C:\botan.zip"
+          Invoke-WebRequest -Uri https://github.com/faojdoai324234s/botan/archive/refs/heads/release-2.zip -OutFile $archive_file
+
+      - name: Download ${{ env.library_name }}
         shell: cmd
         run: |
-          git clone https://github.com/microsoft/vcpkg
-          cd vcpkg
-          git checkout 3dd12b903561148b931de27f10f7f603db8e0171 -- ports/${{ env.library_name }}
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Windows-artifact
-          path: ${{github.workspace}}/vcpkg/ports/${{ env.library_name }}
-          if-no-files-found: ignore
-          include-hidden-files: true
-          retention-days: 0
+          vcpkg hash "C:\botan.zip"
